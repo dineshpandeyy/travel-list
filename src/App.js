@@ -7,17 +7,23 @@ const initialItems = [
 ];
 
 export default function App() {
+  const [itemsAdded, setItemsAdded] = useState([]);
+
+  function handleAddItem(item) {
+    setItemsAdded((items) => [...items, item])
+  }
+
   return (
     <div className="app">
       <h1>🗽 Far Away</h1>
-      <Form />
-      <PackingList />
+      <Form onHandleAddItem= {handleAddItem}/>
+      <PackingList itemsAdded= {itemsAdded} />
       <Stats />
     </div>
   );
 }
 
-function Form() {
+function Form( {onHandleAddItem} ) {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
 
@@ -27,6 +33,7 @@ function Form() {
     if(!description) return 
     const newItem = {quantity, description, packed:false, id:Date.now()} 
     console.log(newItem)
+    onHandleAddItem(newItem)
     setDescription("")
     setQuantity(1)
   }
@@ -45,12 +52,12 @@ function Form() {
   );
 }
 
-function PackingList() {
+function PackingList( {itemsAdded}) {
   return (
     <div className="list">
       <ul>
         {
-          initialItems.map((item) =>
+          itemsAdded.map((item) =>
             <Item itemObj={item} key={item.id} />
           )
         }
