@@ -1,11 +1,5 @@
 import { useState } from "react";
 
-const initialItems = [
-  { id: 1, description: "Passports", quantity: 2, packed: true },
-  { id: 2, description: "Socks", quantity: 12, packed: false },
-  { id: 3, description: "Charger", quantity: 1, packed: true },
-];
-
 export default function App() {
   const [itemsAdded, setItemsAdded] = useState([]);
 
@@ -13,11 +7,15 @@ export default function App() {
     setItemsAdded((items) => [...items, item])
   }
 
+  function handleDeleteItem(item) {
+    setItemsAdded((items) => items.filter(it => it.id !== item.id))
+  }
+
   return (
     <div className="app">
       <h1>🗽 Far Away</h1>
       <Form onHandleAddItem= {handleAddItem}/>
-      <PackingList itemsAdded= {itemsAdded} />
+      <PackingList itemsAdded= {itemsAdded} onHandleDeleteItem= {handleDeleteItem} />
       <Stats />
     </div>
   );
@@ -52,13 +50,13 @@ function Form( {onHandleAddItem} ) {
   );
 }
 
-function PackingList( {itemsAdded}) {
+function PackingList( {itemsAdded, onHandleDeleteItem}) {
   return (
     <div className="list">
       <ul>
         {
           itemsAdded.map((item) =>
-            <Item itemObj={item} key={item.id} />
+            <Item itemObj={item} key={item.id} onHandleDeleteItem={onHandleDeleteItem} />
           )
         }
       </ul>
@@ -66,13 +64,13 @@ function PackingList( {itemsAdded}) {
   )
 }
 
-function Item({ itemObj }) {
+function Item({ itemObj, onHandleDeleteItem}) {
   return (
     <li>
       <span style={itemObj.packed ? { textDecoration: "line-through" } : {}}>
         {itemObj.quantity} {itemObj.description}
       </span>
-      <button>❌</button>
+      <button onClick={() => onHandleDeleteItem(itemObj)}>❌</button>
     </li>
   )
 }
