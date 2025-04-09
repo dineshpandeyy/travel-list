@@ -13,28 +13,28 @@ export default function App() {
   }
 
   function handleCheckBox(id) {
-    setItemsAdded((items) => items.map(it => it.id === id ? {...it, packed: !it.packed} : it))
+    setItemsAdded((items) => items.map(it => it.id === id ? { ...it, packed: !it.packed } : it))
   }
 
   return (
     <div className="app">
       <h1>🗽 Far Away</h1>
-      <Form onHandleAddItem= {handleAddItem}/>
-      <PackingList itemsAdded= {itemsAdded} onHandleDeleteItem= {handleDeleteItem}  onHandleCheckBox = {handleCheckBox}/>
-      <Stats />
+      <Form onHandleAddItem={handleAddItem} />
+      <PackingList itemsAdded={itemsAdded} onHandleDeleteItem={handleDeleteItem} onHandleCheckBox={handleCheckBox} />
+      <Stats numItems={itemsAdded} />
     </div>
   );
 }
 
-function Form( {onHandleAddItem} ) {
+function Form({ onHandleAddItem }) {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
 
   function handleSubmit(e) {
     e.preventDefault();
 
-    if(!description) return 
-    const newItem = {quantity, description, packed:false, id:Date.now()} 
+    if (!description) return
+    const newItem = { quantity, description, packed: false, id: Date.now() }
     console.log(newItem)
     onHandleAddItem(newItem)
     setDescription("")
@@ -55,13 +55,13 @@ function Form( {onHandleAddItem} ) {
   );
 }
 
-function PackingList( {itemsAdded, onHandleDeleteItem, onHandleCheckBox}) {
+function PackingList({ itemsAdded, onHandleDeleteItem, onHandleCheckBox }) {
   return (
     <div className="list">
       <ul>
         {
           itemsAdded.map((item) =>
-            <Item itemObj={item} key={item.id} onHandleDeleteItem={onHandleDeleteItem} onHandleCheckBox = {onHandleCheckBox}/>
+            <Item itemObj={item} key={item.id} onHandleDeleteItem={onHandleDeleteItem} onHandleCheckBox={onHandleCheckBox} />
           )
         }
       </ul>
@@ -69,10 +69,10 @@ function PackingList( {itemsAdded, onHandleDeleteItem, onHandleCheckBox}) {
   )
 }
 
-function Item({ itemObj, onHandleDeleteItem, onHandleCheckBox}) {
+function Item({ itemObj, onHandleDeleteItem, onHandleCheckBox }) {
   return (
     <li>
-      <input type="checkbox" value={itemObj.packed} onClick={() => onHandleCheckBox(itemObj.id)}/>
+      <input type="checkbox" value={itemObj.packed} onClick={() => onHandleCheckBox(itemObj.id)} />
       <span style={itemObj.packed ? { textDecoration: "line-through" } : {}}>
         {itemObj.quantity} {itemObj.description}
       </span>
@@ -81,10 +81,25 @@ function Item({ itemObj, onHandleDeleteItem, onHandleCheckBox}) {
   )
 }
 
-function Stats() {
+function Stats({ numItems }) {
+  if (!numItems.length) {
+    return (
+      <footer className="stats">
+        <em>
+          <p>Start packing the item. 🚀</p>
+        </em>
+      </footer>)
+  }
+  const numItem = numItems.length;
+  const numPacked = numItems.filter(item => item.packed).length
+  const percentage = numItem === 0 ? 0 : Math.round((numPacked / numItem) * 100);
+
   return (
     <footer className="stats">
-      <em>Stats</em>
+      <em>
+        {percentage === 100 ? 'You got everything. You are ready to go. ✈️' :
+          `You have ${numItem} items on your list, and you already packed ${numPacked} (${percentage} %).`}
+      </em>
     </footer>
   );
 }
